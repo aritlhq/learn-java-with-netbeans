@@ -9,10 +9,14 @@ public class FormUtama extends javax.swing.JFrame {
     public static FormKaryawan formKaryawan;
     public static FormPekerjaan formPekerjaan;
     public static FormGaji formGaji;
+    public static FormLaporanGaji formLaporanGaji;
+    public final FormDeskripsi formDeskripsi = new FormDeskripsi(this, true);
+    public final FormLogin formLogin = new FormLogin(this, true);
 
     public FormUtama() {
         initComponents();
         setUkuranLokasiFrame(0.8, true);
+        setEnableMenu(false);
     }
 
     private void setUkuranLokasiFrame(double skala, boolean tengah) {
@@ -66,9 +70,19 @@ public class FormUtama extends javax.swing.JFrame {
         aplikasiMenu.setText("Aplikasi");
 
         deskripsiMenuItem.setText("Deskripsi");
+        deskripsiMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deskripsiMenuItemActionPerformed(evt);
+            }
+        });
         aplikasiMenu.add(deskripsiMenuItem);
 
         aksesMenuItem.setText("Login");
+        aksesMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aksesMenuItemActionPerformed(evt);
+            }
+        });
         aplikasiMenu.add(aksesMenuItem);
         aplikasiMenu.add(jSeparator1);
 
@@ -185,29 +199,23 @@ public class FormUtama extends javax.swing.JFrame {
         }
     }
 
-    public static void main(String args[]) {
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FormUtama.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FormUtama.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FormUtama.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FormUtama.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+    private void deskripsiMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+        formDeskripsi.setVisible(true);
+    }
 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FormUtama().setVisible(true);
+    private void aksesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+        if (aksesMenuItem.getText().equals("Login")) {
+            formLogin.setVisible(true);
+            if (!formLogin.getUserLogin().equals("")) {
+                setEnableMenu(true);
+                aksesMenuItem.setText("Logout");
+            } else {
+                setEnableMenu(false);
             }
-        });
+        } else {
+            aksesMenuItem.setText("Login");
+            setEnableMenu(false);
+        }
     }
 
     // Variables declaration - do not modify
