@@ -4,6 +4,7 @@ import controller.LoginController;
 
 public class FormLogin extends javax.swing.JDialog {
 
+    public static String tipe; // <-- TAMBAHKAN BARIS INI
     private final LoginController loginController = new LoginController();
     private static String userLogin = "";
 
