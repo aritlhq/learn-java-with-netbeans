@@ -2,8 +2,12 @@ package view;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.beans.PropertyVetoException;
 
 public class FormUtama extends javax.swing.JFrame {
+
+    public static FormKaryawan formKaryawan;
+    public static FormPekerjaan formPekerjaan;
 
     public FormUtama() {
         initComponents();
@@ -88,6 +92,11 @@ public class FormUtama extends javax.swing.JFrame {
         masterDataMenu.add(karyawanMenuItem);
 
         pekerjaanMenuItem.setText("Pekerjaan");
+        pekerjaanMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pekerjaanMenuItemActionPerformed(evt);
+            }
+        });
         masterDataMenu.add(pekerjaanMenuItem);
 
         jMenuBar1.add(masterDataMenu);
@@ -132,9 +141,29 @@ public class FormUtama extends javax.swing.JFrame {
     }
 
     private void karyawanMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
-        FormKaryawan formKaryawan = new FormKaryawan();
-        mdiDesktopPane.add(formKaryawan);
-        formKaryawan.setVisible(true);
+        if ((formKaryawan != null) && formKaryawan.isVisible()) {
+            try {
+                formKaryawan.setSelected(true);
+            } catch (PropertyVetoException ex) {
+            }
+        } else {
+            formKaryawan = new FormKaryawan();
+            mdiDesktopPane.add(formKaryawan);
+            formKaryawan.setVisible(true);
+        }
+    }
+
+    private void pekerjaanMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+        if ((formPekerjaan != null) && formPekerjaan.isVisible()) {
+            try {
+                formPekerjaan.setSelected(true);
+            } catch (PropertyVetoException ex) {
+            }
+        } else {
+            formPekerjaan = new FormPekerjaan();
+            mdiDesktopPane.add(formPekerjaan);
+            formPekerjaan.setVisible(true);
+        }
     }
 
     public static void main(String args[]) {
