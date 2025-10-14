@@ -131,6 +131,11 @@ public class FormUtama extends javax.swing.JFrame {
         laporanMenu.setText("Laporan");
 
         gajiLaporanMenuItem.setText("Gaji");
+        gajiLaporanMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gajiLaporanMenuItemActionPerformed(evt);
+            }
+        });
         laporanMenu.add(gajiLaporanMenuItem);
         laporanMenu.add(jSeparator2);
 
@@ -215,6 +220,19 @@ public class FormUtama extends javax.swing.JFrame {
         } else {
             aksesMenuItem.setText("Login");
             setEnableMenu(false);
+        }
+    }
+
+    private void gajiLaporanMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+        if ((formLaporanGaji != null) && formLaporanGaji.isVisible()) {
+            try {
+                formLaporanGaji.setSelected(true);
+            } catch (java.beans.PropertyVetoException ex) {
+            }
+        } else {
+            formLaporanGaji = new FormLaporanGaji();
+            mdiDesktopPane.add(formLaporanGaji);
+            formLaporanGaji.setVisible(true);
         }
     }
 

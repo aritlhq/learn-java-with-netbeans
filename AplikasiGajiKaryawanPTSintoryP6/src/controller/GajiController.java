@@ -4,29 +4,20 @@
  */
 package controller;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import model.Gaji;
 import model.Karyawan;
-import model.Koneksi;
 import model.Pekerjaan;
-// import net.sf.jasperreports.engine.JRException;
-// import net.sf.jasperreports.engine.JRResultSetDataSource;
-// import net.sf.jasperreports.engine.JasperCompileManager;
-// import net.sf.jasperreports.engine.JasperFillManager;
-// import net.sf.jasperreports.engine.JasperPrint;
-// import net.sf.jasperreports.engine.JasperReport;
-// import net.sf.jasperreports.engine.design.JasperDesign;
-// import net.sf.jasperreports.engine.xml.JRXmlLoader;
-// import net.sf.jasperreports.view.JasperViewer;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRResultSetDataSource;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
+import net.sf.jasperreports.view.JasperViewer;
 import view.FormLihatKaryawan;
 import view.FormLihatPekerjaan;
 import view.FormUtama;
@@ -56,7 +47,7 @@ public class GajiController {
 
                     if (listGaji.length > 0) {
                         for (int i = 0; i < listGaji.length; i++) {
-                            if (!((String) listGaji[i][0]).equals("")) {
+                            if (listGaji[i][0] != null && !((String) listGaji[i][0]).equals("")) {
                                 String namaPekerjaan = "";
                                 if (pekerjaan.baca((String) listGaji[i][0])) {
                                     namaPekerjaan = pekerjaan.getNamaPekerjaan();
@@ -90,7 +81,7 @@ public class GajiController {
             formLihatKaryawan.tampilkanData(karyawan.getList());
             formLihatKaryawan.setVisible(true);
 
-            if (!formLihatKaryawan.getKtpDipilih().equals("")) {
+            if (formLihatKaryawan.getKtpDipilih() != null && !formLihatKaryawan.getKtpDipilih().equals("")) {
                 if (karyawan.baca(formLihatKaryawan.getKtpDipilih())) {
                     FormUtama.formGaji.setKtp(karyawan.getKtp());
                     FormUtama.formGaji.setNama(karyawan.getNama());
@@ -103,7 +94,7 @@ public class GajiController {
                         FormUtama.formGaji.clearGajiTable();
                         if (listGaji.length > 0) {
                             for (int i = 0; i < listGaji.length; i++) {
-                                if (!((String) listGaji[i][0]).equals("")) {
+                                if (listGaji[i][0] != null && !((String) listGaji[i][0]).equals("")) {
                                     String namaPekerjaan = "";
                                     if (pekerjaan.baca((String) listGaji[i][0])) {
                                         namaPekerjaan = pekerjaan.getNamaPekerjaan();
@@ -133,7 +124,8 @@ public class GajiController {
         if (pekerjaan.bacaData()) {
             formLihatPekerjaan.tampilkanData(pekerjaan.getList());
             formLihatPekerjaan.setVisible(true);
-            if (!formLihatPekerjaan.getKodePekerjaanDipilih().equals("")) {
+            if (formLihatPekerjaan.getKodePekerjaanDipilih() != null
+                    && !formLihatPekerjaan.getKodePekerjaanDipilih().equals("")) {
                 if (pekerjaan.baca(formLihatPekerjaan.getKodePekerjaanDipilih())) {
                     FormUtama.formGaji.setTambahGaji(new Object[] { pekerjaan.getKodePekerjaan(),
                             pekerjaan.getNamaPekerjaan(), "", "", "" });
@@ -190,10 +182,8 @@ public class GajiController {
             ruang = Integer.parseInt(ruangComboBox.getSelectedItem().toString());
         }
 
-        // Memanggil method yang sudah dimodifikasi di Gaji.java
         if (!gaji.cetakLaporan(ruang)) {
-            // Menampilkan pesan yang kita buat di Gaji.java
-            JOptionPane.showMessageDialog(null, gaji.getPesan(), "Informasi", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, gaji.getPesan(), "Kesalahan", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

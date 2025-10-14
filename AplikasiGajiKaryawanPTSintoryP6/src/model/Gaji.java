@@ -11,15 +11,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
-// import net.sf.jasperreports.engine.JRException;
-// import net.sf.jasperreports.engine.JRResultSetDataSource;
-// import net.sf.jasperreports.engine.JasperCompileManager;
-// import net.sf.jasperreports.engine.JasperFillManager;
-// import net.sf.jasperreports.engine.JasperPrint;
-// import net.sf.jasperreports.engine.JasperReport;
-// import net.sf.jasperreports.engine.design.JasperDesign;
-// import net.sf.jasperreports.engine.xml.JRXmlLoader;
-// import net.sf.jasperreports.view.JasperViewer;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRResultSetDataSource;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -112,26 +112,25 @@ public class Gaji {
                 preparedStatement.setString(1, ktp);
                 rset = preparedStatement.executeQuery();
 
-                rset.next();
                 rset.last();
                 listGaji = new Object[rset.getRow()][4];
 
-                rset.first();
-                int i = 0;
-                do {
-                    if (!rset.getString("kodepekerjaan").equals("")) {
-                        listGaji[i] = new Object[] {
-                                rset.getString("kodepekerjaan"),
-                                rset.getObject("gajibersih"),
-                                rset.getObject("gajikotor"),
-                                rset.getObject("tunjangan") };
-                    }
-                    i++;
-                } while (rset.next());
-
-                if (listGaji.length > 0) {
-                    adaKesalahan = false;
+                if (rset.getRow() > 0) {
+                    rset.first();
+                    int i = 0;
+                    do {
+                        if (!rset.getString("kodepekerjaan").equals("")) {
+                            listGaji[i] = new Object[] {
+                                    rset.getString("kodepekerjaan"),
+                                    rset.getObject("gajibersih"),
+                                    rset.getObject("gajikotor"),
+                                    rset.getObject("tunjangan") };
+                        }
+                        i++;
+                    } while (rset.next());
                 }
+
+                adaKesalahan = false;
 
                 preparedStatement.close();
                 rset.close();
@@ -149,9 +148,68 @@ public class Gaji {
     }
 
     public boolean cetakLaporan(int ruang) {
-        // Karena library JasperReports tidak ditambahkan, fitur ini dinonaktifkan.
-        pesan = "Fitur cetak laporan tidak aktif karena library JasperReports tidak ditemukan.";
-        return false;
+        boolean adaKesalahan = false;
+        Connection connection;
 
+        if ((connection = koneksi.getConnection()) != null) {
+            String SQLStatement;
+            Statement statement;
+            ResultSet resultSet = null;
+
+            try {
+                SQLStatement = "SELECT "
+                        + "tbkaryawan.`ktp` AS tbkaryawan_ktp, "
+                        + "tbkaryawan.`nama` AS tbkaryawan_nama, "
+                        + "tbkaryawan.`ruang` AS tbkaryawan_ruang, "
+                        + "tbpekerjaan.`kodepekerjaan` AS tbpekerjaan_kodepekerjaan, "
+                        + "tbpekerjaan.`namapekerjaan` AS tbpekerjaan_namapekerjaan, "
+                        + "tbpekerjaan.`jumlahtugas` AS tbpekerjaan_jumlahtugas, "
+                        + "tbgaji.`ktp` AS tbgaji_ktp, "
+                        + "tbgaji.`kodepekerjaan` AS tbgaji_kodepekerjaan, "
+                        + "tbgaji.`gajibersih` AS tbgaji_gajibersih, "
+                        + "tbgaji.`gajikotor` AS tbgaji_gajikotor, "
+                        + "tbgaji.`tunjangan` AS tbgaji_tunjangan, "
+                        + "round((tbgaji.`gajibersih`+tbgaji.`gajikotor`+tbgaji.`tunjangan`)/3, 2) AS tbgaji_gajipokok, "
+                        + "(if((tbgaji.`gajibersih`+tbgaji.`gajikotor`+tbgaji.`tunjangan`)/3>=5000000,'A', "
+                        + "if((tbgaji.`gajibersih`+tbgaji.`gajikotor`+tbgaji.`tunjangan`)/3>=4000000,'B', "
+                        + "if((tbgaji.`gajibersih`+tbgaji.`gajikotor`+tbgaji.`tunjangan`)/3>=3000000,'C', "
+                        + "if((tbgaji.`gajibersih`+tbgaji.`gajikotor`+tbgaji.`tunjangan`)/3>=2000000,'D','E'))))) AS tbgaji_gajihuruf, "
+                        + "(if((tbgaji.`gajibersih`+tbgaji.`gajikotor`+tbgaji.`tunjangan`)/3>=1000000,'UMR','Tidak UMR')) AS tbgaji_status "
+                        + "FROM `tbkaryawan` tbkaryawan INNER JOIN `tbgaji` tbgaji ON tbkaryawan.`ktp` = tbgaji.`ktp` "
+                        + "INNER JOIN `tbpekerjaan` tbpekerjaan ON tbgaji.`kodepekerjaan` = tbpekerjaan.`kodepekerjaan` ";
+
+                if (ruang != 0) {
+                    SQLStatement = SQLStatement + " where tbkaryawan.`ruang`=" + ruang;
+                }
+
+                SQLStatement = SQLStatement
+                        + " ORDER BY tbkaryawan.`ruang` ASC, tbkaryawan.`nama` ASC, tbkaryawan.`ktp` ASC";
+
+                statement = connection.createStatement();
+                resultSet = statement.executeQuery(SQLStatement);
+            } catch (SQLException ex) {
+                adaKesalahan = true;
+                pesan = "Tidak dapat membaca data\n" + ex;
+            }
+
+            if (resultSet != null) {
+                try {
+                    JasperDesign disain = JRXmlLoader.load("src/reports/GajiReport.jrxml");
+                    JasperReport gajiLaporan = JasperCompileManager.compileReport(disain);
+                    JRResultSetDataSource resultSetDataSource = new JRResultSetDataSource(resultSet);
+                    JasperPrint cetak = JasperFillManager.fillReport(gajiLaporan, new HashMap(),
+                            resultSetDataSource);
+                    JasperViewer.viewReport(cetak, false);
+                } catch (JRException ex) {
+                    adaKesalahan = true;
+                    pesan = "Tidak dapat mencetak laporan\n" + ex;
+                }
+            }
+        } else {
+            adaKesalahan = true;
+            pesan = "Tidak dapat melakukan koneksi ke server\n" + koneksi.getPesanKesalahan();
+        }
+
+        return !adaKesalahan;
     }
-};
+}
