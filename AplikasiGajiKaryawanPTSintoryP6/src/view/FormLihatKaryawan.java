@@ -149,11 +149,11 @@ public class FormLihatKaryawan extends javax.swing.JDialog {
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {
         // Dummy data for demonstration
-        Object[][] list = {
-                { "20142077", "isal" },
-                { "2015142099", "ratu" }
-        };
-        tampilkanData(list);
+        // Object[][] list = {
+        // { "20142077", "isal" },
+        // { "2015142099", "ratu" }
+        // };
+        // tampilkanData(list);
     }
 
     // Variables declaration - do not modify

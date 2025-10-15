@@ -72,22 +72,32 @@ public class Gaji {
             } catch (SQLException ex) {
             }
 
-            for (Object[] recGaji : listGaji) {
-                try {
-                    SQLStatemen = "insert into tbgaji(ktp, kodepekerjaan, gajibersih, gajikotor, tunjangan) values (?,?,?,?,?)";
-                    preparedStatement = connection.prepareStatement(SQLStatemen);
-                    preparedStatement.setString(1, ktp);
-                    for (int i = 0; i < 4; i++) {
-                        preparedStatement.setString(2 + i, recGaji[i].toString());
+            if (listGaji != null && listGaji.length > 0) {
+                for (Object[] recGaji : listGaji) {
+                    if (recGaji[0] != null && !recGaji[0].toString().isEmpty()) {
+                        try {
+                            SQLStatemen = "insert into tbgaji(ktp, kodepekerjaan, gajibersih, gajikotor, tunjangan) values (?,?,?,?,?)";
+                            preparedStatement = connection.prepareStatement(SQLStatemen);
+                            preparedStatement.setString(1, ktp);
+                            preparedStatement.setString(2, recGaji[0].toString());
+
+                            preparedStatement.setDouble(3, Double.parseDouble(recGaji[1].toString())); // gajibersih
+                            preparedStatement.setDouble(4, Double.parseDouble(recGaji[2].toString())); // gajikotor
+                            preparedStatement.setDouble(5, Double.parseDouble(recGaji[3].toString())); // tunjangan
+
+                            jumlahSimpan += preparedStatement.executeUpdate();
+                        } catch (SQLException | NumberFormatException ex) {
+                            adaKesalahan = true;
+                            pesan = "Gagal menyimpan data gaji!\n" + ex.getMessage();
+                        }
                     }
-                    jumlahSimpan += preparedStatement.executeUpdate();
-                } catch (SQLException ex) {
                 }
             }
 
             if (jumlahSimpan > 0) {
                 adaKesalahan = false;
             }
+
         } else {
             adaKesalahan = true;
             pesan = "Tidak dapat melakukan koneksi ke server\n" + koneksi.getPesanKesalahan();
@@ -108,7 +118,8 @@ public class Gaji {
 
             try {
                 String SQLStatemen = "select * from tbgaji where ktp=?";
-                preparedStatement = connection.prepareStatement(SQLStatemen);
+                preparedStatement = connection.prepareStatement(SQLStatemen, ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_READ_ONLY);
                 preparedStatement.setString(1, ktp);
                 rset = preparedStatement.executeQuery();
 
@@ -116,9 +127,9 @@ public class Gaji {
                 listGaji = new Object[rset.getRow()][4];
 
                 if (rset.getRow() > 0) {
-                    rset.first();
+                    rset.beforeFirst();
                     int i = 0;
-                    do {
+                    while (rset.next()) {
                         if (!rset.getString("kodepekerjaan").equals("")) {
                             listGaji[i] = new Object[] {
                                     rset.getString("kodepekerjaan"),
@@ -127,7 +138,7 @@ public class Gaji {
                                     rset.getObject("tunjangan") };
                         }
                         i++;
-                    } while (rset.next());
+                    }
                 }
 
                 adaKesalahan = false;

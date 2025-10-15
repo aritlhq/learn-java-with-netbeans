@@ -161,21 +161,20 @@ public class Pekerjaan {
             ResultSet rset;
             try {
                 SQLStatemen = "select kodepekerjaan,namapekerjaan from tbpekerjaan";
-                sta = connection.createStatement();
+                sta = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 rset = sta.executeQuery(SQLStatemen);
 
-                rset.next();
                 rset.last();
                 list = new Object[rset.getRow()][2];
 
                 if (rset.getRow() > 0) {
-                    rset.first();
+                    rset.beforeFirst();
                     int i = 0;
-                    do {
+                    while (rset.next()) {
                         list[i] = new Object[] { rset.getString("kodepekerjaan"),
                                 rset.getString("namapekerjaan") };
                         i++;
-                    } while (rset.next());
+                    }
                 }
 
                 sta.close();

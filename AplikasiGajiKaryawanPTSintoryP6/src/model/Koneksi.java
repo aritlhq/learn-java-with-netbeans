@@ -16,7 +16,7 @@ public class Koneksi {
     private static final String driver = "com.mysql.jdbc.Driver";
     private static final String database = "jdbc:mysql://localhost/dbaplikasigajikaryawan";
     private static final String user = "root";
-    private static final String password = "";
+    private static final String password = "zeroByte0xf-";
 
     private Connection connection;
     private String pesanKesalahan;

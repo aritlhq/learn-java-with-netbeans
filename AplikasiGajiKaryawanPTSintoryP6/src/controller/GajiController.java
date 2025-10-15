@@ -60,9 +60,9 @@ public class GajiController {
                     }
                 }
 
-                if (jumlahGaji == 0) {
-                    FormUtama.formGaji.setTambahGaji(new Object[] {});
-                }
+                // if (jumlahGaji == 0) {
+                // FormUtama.formGaji.setTambahGaji(new Object[] {});
+                // }
             } else {
                 FormUtama.formGaji.setNama("");
                 FormUtama.formGaji.setRuang("");

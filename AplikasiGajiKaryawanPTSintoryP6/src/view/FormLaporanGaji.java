@@ -8,6 +8,7 @@ public class FormLaporanGaji extends javax.swing.JInternalFrame {
 
     public FormLaporanGaji() {
         initComponents();
+        setItemToComboBox();
     }
 
     @SuppressWarnings("unchecked")
@@ -79,6 +80,14 @@ public class FormLaporanGaji extends javax.swing.JInternalFrame {
 
     private void cetakButtonActionPerformed(java.awt.event.ActionEvent evt) {
         gajiController.cetakLaporan(ruangComboBox);
+    }
+
+    private void setItemToComboBox() {
+        ruangComboBox.removeAllItems();
+        ruangComboBox.addItem("Semua Ruang"); // Opsi untuk menampilkan semua
+        for (int i = 1; i <= 14; i++) {
+            ruangComboBox.addItem(String.valueOf(i));
+        }
     }
 
     // Variables declaration - do not modify

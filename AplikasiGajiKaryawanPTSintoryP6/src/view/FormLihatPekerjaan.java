@@ -149,14 +149,13 @@ public class FormLihatPekerjaan extends javax.swing.JDialog {
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {
         kodePekerjaanDipilih = "";
-        // Dummy data for demonstration
-        Object[][] list = {
-                { "1415", "admin" },
-                { "2231", "sales" },
-                { "4444", "direktur" },
-                { "4545", "KULI" }
-        };
-        tampilkanData(list);
+        // Object[][] list = {
+        // { "1415", "admin" },
+        // { "2231", "sales" },
+        // { "4444", "direktur" },
+        // { "4545", "KULI" }
+        // };
+        // tampilkanData(list);
     }
 
     // Variables declaration - do not modify

@@ -191,20 +191,20 @@ public class Karyawan {
 
             try {
                 SQLStatemen = "select ktp, nama from tbkaryawan";
-                preparedStatement = connection.prepareStatement(SQLStatemen);
+                preparedStatement = connection.prepareStatement(SQLStatemen, ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_READ_ONLY);
                 rset = preparedStatement.executeQuery();
 
-                rset.next();
                 rset.last();
                 list = new Object[rset.getRow()][2];
 
                 if (rset.getRow() > 0) {
-                    rset.first();
+                    rset.beforeFirst();
                     int i = 0;
-                    do {
+                    while (rset.next()) {
                         list[i] = new Object[] { rset.getString("ktp"), rset.getString("nama") };
                         i++;
-                    } while (rset.next());
+                    }
                 }
 
                 preparedStatement.close();

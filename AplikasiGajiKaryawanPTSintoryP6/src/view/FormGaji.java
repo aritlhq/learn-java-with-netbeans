@@ -18,6 +18,7 @@ public class FormGaji extends javax.swing.JInternalFrame {
     public FormGaji() {
         initComponents();
         gajiDefaultTableModel = (DefaultTableModel) gajiTable.getModel();
+        setItemToComboBox();
     }
 
     @SuppressWarnings("unchecked")
@@ -89,6 +90,12 @@ public class FormGaji extends javax.swing.JInternalFrame {
         });
 
         tutupButton.setText("Tutup");
+
+        tutupButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dispose();
+            }
+        });
 
         jLabel4.setText("Gaji");
 
@@ -272,6 +279,13 @@ public class FormGaji extends javax.swing.JInternalFrame {
         }
     }
 
+    private void setItemToComboBox() {
+        ruangComboBox.removeAllItems();
+        for (int i = 1; i <= 14; i++) {
+            ruangComboBox.addItem(String.valueOf(i));
+        }
+    }
+
     // Variables declaration - do not modify
     private javax.swing.JTable gajiTable;
     private javax.swing.JMenuItem hapusMenuItem;
@@ -312,32 +326,46 @@ public class FormGaji extends javax.swing.JInternalFrame {
         }
     }
 
+    // public void setTambahGaji(Object[] gajiPekerjaan) {
+    // int noRecord;
+    // if ((noRecord = gajiDefaultTableModel.getRowCount() - 1) >= 0) {
+    // while ((((gajiTable.getValueAt(noRecord, 0) == null) ||
+    // gajiTable.getValueAt(noRecord, 0).equals(""))
+    // && (noRecord > 0))) {
+    // noRecord--;
+    // }
+    // }
+
+    // if (!((gajiTable.getValueAt(noRecord, 0) == null) ||
+    // gajiTable.getValueAt(noRecord, 0).equals(""))) {
+    // noRecord++;
+    // }
+
+    // if (noRecord < gajiDefaultTableModel.getRowCount()) {
+    // if ((gajiTable.getValueAt(noRecord, 0) == null) ||
+    // gajiTable.getValueAt(noRecord, 0).equals("")) {
+    // gajiDefaultTableModel.removeRow(noRecord--);
+    // }
+    // } else {
+    // noRecord--;
+    // }
+
+    // gajiDefaultTableModel.insertRow(++noRecord, gajiPekerjaan);
+    // }
+
     public void setTambahGaji(Object[] gajiPekerjaan) {
-        int noRecord;
-        if ((noRecord = gajiDefaultTableModel.getRowCount() - 1) >= 0) {
-            while ((((gajiTable.getValueAt(noRecord, 0) == null) || gajiTable.getValueAt(noRecord, 0).equals(""))
-                    && (noRecord > 0))) {
-                noRecord--;
+        if (gajiDefaultTableModel.getRowCount() > 0) {
+            if (gajiTable.getValueAt(gajiDefaultTableModel.getRowCount() - 1, 0) == null) {
+                gajiDefaultTableModel.removeRow(gajiDefaultTableModel.getRowCount() - 1);
             }
         }
-
-        if (!((gajiTable.getValueAt(noRecord, 0) == null) || gajiTable.getValueAt(noRecord, 0).equals(""))) {
-            noRecord++;
-        }
-
-        if (noRecord < gajiDefaultTableModel.getRowCount()) {
-            if ((gajiTable.getValueAt(noRecord, 0) == null) || gajiTable.getValueAt(noRecord, 0).equals("")) {
-                gajiDefaultTableModel.removeRow(noRecord--);
-            }
-        } else {
-            noRecord--;
-        }
-
-        gajiDefaultTableModel.insertRow(++noRecord, gajiPekerjaan);
+        gajiDefaultTableModel.addRow(gajiPekerjaan);
+        gajiDefaultTableModel.addRow(new Object[] {});
     }
 
     public void clearGajiTable() {
         gajiDefaultTableModel.setRowCount(0);
+        gajiDefaultTableModel.addRow(new Object[] {});
     }
 
     private void klikKananTabel(java.awt.event.MouseEvent evt) {
