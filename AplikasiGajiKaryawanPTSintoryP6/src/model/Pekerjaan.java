@@ -5,9 +5,18 @@
 package model;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.view.JasperViewer;
 import view.PesanDialog;
 
 /**
@@ -16,6 +25,7 @@ import view.PesanDialog;
  */
 public class Pekerjaan {
     private String kodePekerjaan, namaPekerjaan;
+    private String kodePekerjaanLama;
     private int jumlahTugas;
     private String pesan;
     private Object[][] list;
@@ -63,47 +73,52 @@ public class Pekerjaan {
         Connection connection;
 
         if ((connection = koneksi.getConnection()) != null) {
+            PreparedStatement preparedStatement;
+            String SQLStatemen;
             int jumlahSimpan = 0;
-            boolean simpan = false;
-            Statement sta;
-            ResultSet rset;
 
             try {
-                String SQLStatemen = "select * from tbpekerjaan where kodepekerjaan='" + kodePekerjaan + "'";
-                sta = connection.createStatement();
-                rset = sta.executeQuery(SQLStatemen);
+                if (this.kodePekerjaanLama != null && !this.kodePekerjaanLama.isEmpty()) {
+                    SQLStatemen = "UPDATE tbpekerjaan SET kodepekerjaan=?, namapekerjaan=?, jumlahtugas=? WHERE kodepekerjaan=?";
+                    preparedStatement = connection.prepareStatement(SQLStatemen);
+                    preparedStatement.setString(1, this.kodePekerjaan);
+                    preparedStatement.setString(2, this.namaPekerjaan);
+                    preparedStatement.setInt(3, this.jumlahTugas);
+                    preparedStatement.setString(4, this.kodePekerjaanLama);
 
-                rset.next();
-                if (rset.getRow() > 0) {
-                    if (pesanDialog.tampilkanPilihan("Kode pekerjaan sudah ada\nApakah data diperbaharui?",
-                            "Konfirmasi", new Object[] { "Ya", "Tidak" }) == 0) {
-                        simpan = true;
-                        SQLStatemen = "update tbpekerjaan set namapekerjaan='" + namaPekerjaan + "', "
-                                + "jumlahtugas='" + jumlahTugas + "' where kodepekerjaan='" + kodePekerjaan + "'";
-                        sta = connection.createStatement();
-                        jumlahSimpan = sta.executeUpdate(SQLStatemen);
-                    }
+                    jumlahSimpan = preparedStatement.executeUpdate();
                 } else {
-                    simpan = true;
-                    SQLStatemen = "insert into tbpekerjaan values ('" + kodePekerjaan + "','" + namaPekerjaan + "','"
-                            + jumlahTugas + "')";
-                    sta = connection.createStatement();
-                    jumlahSimpan = sta.executeUpdate(SQLStatemen);
-                }
+                    SQLStatemen = "SELECT kodepekerjaan FROM tbpekerjaan WHERE kodepekerjaan=?";
+                    preparedStatement = connection.prepareStatement(SQLStatemen);
+                    preparedStatement.setString(1, this.kodePekerjaan);
+                    ResultSet rset = preparedStatement.executeQuery();
 
-                if (simpan) {
-                    if (jumlahSimpan < 1) {
+                    if (rset.next()) {
                         adaKesalahan = true;
-                        pesan = "Gagal menyimpan data pekerjaan";
+                        pesan = "Kode Pekerjaan \"" + this.kodePekerjaan + "\" sudah ada!";
+                    } else {
+                        SQLStatemen = "INSERT INTO tbpekerjaan(kodepekerjaan, namapekerjaan, jumlahtugas) VALUES (?,?,?)";
+                        preparedStatement = connection.prepareStatement(SQLStatemen);
+                        preparedStatement.setString(1, this.kodePekerjaan);
+                        preparedStatement.setString(2, this.namaPekerjaan);
+                        preparedStatement.setInt(3, this.jumlahTugas);
+
+                        jumlahSimpan = preparedStatement.executeUpdate();
                     }
                 }
 
-                sta.close();
-                rset.close();
+                if (jumlahSimpan > 0) {
+                    this.kodePekerjaanLama = null;
+                } else if (!adaKesalahan) {
+                    adaKesalahan = true;
+                    pesan = "Gagal menyimpan data pekerjaan";
+                }
+
+                preparedStatement.close();
                 connection.close();
             } catch (SQLException ex) {
                 adaKesalahan = true;
-                pesan = "Tidak dapat membuka tabel tbpekerjaan\n" + ex;
+                pesan = "Tidak dapat menjalankan perintah SQL\n" + ex.getMessage();
             }
         } else {
             adaKesalahan = true;
@@ -131,9 +146,13 @@ public class Pekerjaan {
                     this.kodePekerjaan = rset.getString("kodepekerjaan");
                     this.namaPekerjaan = rset.getString("namapekerjaan");
                     this.jumlahTugas = rset.getInt("jumlahtugas");
+
+                    this.kodePekerjaanLama = this.kodePekerjaan;
                 } else {
                     adaKesalahan = true;
                     pesan = "Kode pekerjaan \"" + kodePekerjaan + "\" tidak ditemukan";
+
+                    this.kodePekerjaanLama = null;
                 }
 
                 sta.close();
@@ -219,6 +238,30 @@ public class Pekerjaan {
         } else {
             adaKesalahan = true;
             pesan = "Tidak dapat melakukan koneksi ke server\n" + koneksi.getPesanKesalahan();
+        }
+        return !adaKesalahan;
+    }
+
+    public boolean cetakLaporan() {
+        boolean adaKesalahan = false;
+        Connection connection;
+        if ((connection = koneksi.getConnection()) != null) {
+            try {
+                String reportPath = "src/reports/PekerjaanReport.jrxml";
+
+                JasperReport jasperReport = JasperCompileManager.compileReport(reportPath);
+
+                JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, new HashMap<>(), connection);
+
+                JasperViewer.viewReport(jasperPrint, false);
+
+            } catch (JRException ex) {
+                adaKesalahan = true;
+                pesan = "Tidak dapat mencetak laporan pekerjaan.\n" + ex.getMessage();
+            }
+        } else {
+            adaKesalahan = true;
+            pesan = "Tidak dapat terhubung ke database.";
         }
         return !adaKesalahan;
     }

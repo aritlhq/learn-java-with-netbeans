@@ -8,6 +8,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.view.JasperViewer;
 import view.PesanDialog;
 
 /**
@@ -253,6 +261,30 @@ public class Karyawan {
             pesan = "Tidak dapat melakukan koneksi ke server\n" + koneksi.getPesanKesalahan();
         }
 
+        return !adaKesalahan;
+    }
+
+    public boolean cetakLaporan() {
+        boolean adaKesalahan = false;
+        Connection connection;
+        if ((connection = koneksi.getConnection()) != null) {
+            try {
+                String reportPath = "src/reports/KaryawanReport.jrxml";
+
+                JasperReport jasperReport = JasperCompileManager.compileReport(reportPath);
+
+                JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, new HashMap<>(), connection);
+
+                JasperViewer.viewReport(jasperPrint, false);
+
+            } catch (JRException ex) {
+                adaKesalahan = true;
+                pesan = "Tidak dapat mencetak laporan karyawan.\n" + ex.getMessage();
+            }
+        } else {
+            adaKesalahan = true;
+            pesan = "Tidak dapat terhubung ke database.";
+        }
         return !adaKesalahan;
     }
 }

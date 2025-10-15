@@ -17,6 +17,18 @@ public class FormUtama extends javax.swing.JFrame {
         initComponents();
         setUkuranLokasiFrame(0.8, true);
         setEnableMenu(false);
+
+        karyawanLaporanMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                karyawanLaporanMenuItemActionPerformed(evt);
+            }
+        });
+
+        pekerjaanLaporanMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pekerjaanLaporanMenuItemActionPerformed(evt);
+            }
+        });
     }
 
     private void setUkuranLokasiFrame(double skala, boolean tengah) {
@@ -234,6 +246,14 @@ public class FormUtama extends javax.swing.JFrame {
             mdiDesktopPane.add(formLaporanGaji);
             formLaporanGaji.setVisible(true);
         }
+    }
+
+    private void karyawanLaporanMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+        new controller.KaryawanController().cetakLaporan();
+    }
+
+    private void pekerjaanLaporanMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+        new controller.PekerjaanController().cetakLaporan();
     }
 
     // Variables declaration - do not modify

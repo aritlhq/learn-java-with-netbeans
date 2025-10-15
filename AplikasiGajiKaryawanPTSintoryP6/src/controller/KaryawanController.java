@@ -112,4 +112,10 @@ public class KaryawanController {
             JOptionPane.showMessageDialog(null, karyawan.getPesan());
         }
     }
+
+    public void cetakLaporan() {
+        if (!karyawan.cetakLaporan()) {
+            JOptionPane.showMessageDialog(null, karyawan.getPesan(), "Kesalahan Laporan", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 }

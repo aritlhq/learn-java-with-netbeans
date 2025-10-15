@@ -87,4 +87,10 @@ public class PekerjaanController {
             JOptionPane.showMessageDialog(null, pekerjaan.getPesan());
         }
     }
+
+    public void cetakLaporan() {
+        if (!pekerjaan.cetakLaporan()) {
+            JOptionPane.showMessageDialog(null, pekerjaan.getPesan(), "Kesalahan Laporan", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 }

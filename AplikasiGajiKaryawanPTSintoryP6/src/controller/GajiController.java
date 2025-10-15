@@ -152,27 +152,45 @@ public class GajiController {
     public void simpan(javax.swing.JTextField ktp, javax.swing.JTable gajiTable) {
         if (!ktp.getText().equals("")) {
             gaji.setKtp(ktp.getText());
-            Object[][] listGaji = new Object[gajiTable.getRowCount()][4];
 
-            for (int i = 0; i < gajiTable.getRowCount(); i++) {
-                listGaji[i][0] = gajiTable.getValueAt(i, 0);
-                listGaji[i][1] = gajiTable.getValueAt(i, 2);
-                listGaji[i][2] = gajiTable.getValueAt(i, 3);
-                listGaji[i][3] = gajiTable.getValueAt(i, 4);
+            int rowCount = gajiTable.getRowCount();
+            if (rowCount > 0 && (gajiTable.getValueAt(rowCount - 1, 0) == null
+                    || gajiTable.getValueAt(rowCount - 1, 0).toString().isEmpty())) {
+                rowCount--;
+            }
+
+            Object[][] listGaji = new Object[rowCount][4];
+
+            for (int i = 0; i < rowCount; i++) {
+                listGaji[i][0] = gajiTable.getValueAt(i, 0); // Kode
+                listGaji[i][1] = gajiTable.getValueAt(i, 2); // Gaji Bersih
+                listGaji[i][2] = gajiTable.getValueAt(i, 3); // Gaji Kotor
+                listGaji[i][3] = gajiTable.getValueAt(i, 4); // Tunjangan
+
+                if (listGaji[i][1] == null || listGaji[i][1].toString().isEmpty()) {
+                    listGaji[i][1] = "0";
+                }
+                if (listGaji[i][2] == null || listGaji[i][2].toString().isEmpty()) {
+                    listGaji[i][2] = "0";
+                }
+                if (listGaji[i][3] == null || listGaji[i][3].toString().isEmpty()) {
+                    listGaji[i][3] = "0";
+                }
             }
 
             gaji.setListGaji(listGaji);
             if (gaji.simpan()) {
+                JOptionPane.showMessageDialog(null, "Data gaji berhasil disimpan.", "Sukses",
+                        JOptionPane.INFORMATION_MESSAGE);
                 FormUtama.formGaji.setKtp("");
                 FormUtama.formGaji.setNama("");
                 FormUtama.formGaji.setRuang("");
                 FormUtama.formGaji.clearGajiTable();
-                FormUtama.formGaji.setTambahGaji(new Object[] {});
             } else {
-                JOptionPane.showMessageDialog(null, gaji.getPesan());
+                JOptionPane.showMessageDialog(null, gaji.getPesan(), "Kesalahan", JOptionPane.ERROR_MESSAGE);
             }
         } else {
-            JOptionPane.showMessageDialog(null, "ktp tidak boleh kosong\n", "Kesalahan", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "KTP tidak boleh kosong\n", "Kesalahan", JOptionPane.ERROR_MESSAGE);
         }
     }
 
