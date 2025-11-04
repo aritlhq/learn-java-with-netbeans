@@ -12,7 +12,7 @@ import view.FormUtama;
 
 /**
  *
- * @author Guci
+ * @author Muhammad Faqih Alharits
  */
 public class PekerjaanController {
     private final Pekerjaan pekerjaan = new Pekerjaan();

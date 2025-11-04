@@ -24,7 +24,7 @@ import view.FormUtama;
 
 /**
  *
- * @author Guci
+ * @author Muhammad Faqih Alharits
  */
 public class GajiController {
     private final Karyawan karyawan = new Karyawan();

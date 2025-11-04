@@ -18,7 +18,8 @@ public class FormDeskripsi extends javax.swing.JDialog {
         setTitle("Deskripsi Aplikasi");
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Ini adalah aplikasi penggajian karyawan sederhana oleh sang Maestro of Code");
+        jLabel1.setText(
+                "<html><center>Ini adalah aplikasi penggajian karyawan sederhana oleh sang Maestro of Code<br><br>By: Muhammad Faqih Alharits</center></html>");
 
         jButton1.setText("Tutup");
         jButton1.addActionListener(new java.awt.event.ActionListener() {

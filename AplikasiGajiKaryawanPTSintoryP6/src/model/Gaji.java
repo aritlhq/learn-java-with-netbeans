@@ -23,7 +23,7 @@ import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
- * @author Guci
+ * @author Muhammad Faqih Alharits
  */
 public class Gaji {
     private String ktp;

@@ -12,7 +12,7 @@ import view.FormLogin;
 
 /**
  *
- * @author Guci
+ * @author Muhammad Faqih Alharits
  */
 public class LoginController {
     private final Karyawan karyawan = new Karyawan();

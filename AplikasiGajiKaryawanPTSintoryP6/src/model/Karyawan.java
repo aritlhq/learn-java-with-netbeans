@@ -20,7 +20,7 @@ import view.PesanDialog;
 
 /**
  *
- * @author Guci
+ * @author Muhammad Faqih Alharits
  */
 public class Karyawan {
     private String ktp, nama, password;

@@ -8,7 +8,7 @@ import java.security.MessageDigest;
 
 /**
  *
- * @author Guci
+ * @author Muhammad Faqih Alharits
  */
 public class Enkripsi {
     public String hashMD5(String value) throws Exception {

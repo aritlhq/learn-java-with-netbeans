@@ -21,7 +21,7 @@ import view.PesanDialog;
 
 /**
  *
- * @author Guci
+ * @author Muhammad Faqih Alharits
  */
 public class Pekerjaan {
     private String kodePekerjaan, namaPekerjaan;
